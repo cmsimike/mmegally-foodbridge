@@ -1,6 +1,5 @@
 ﻿using FoodBridge.Data;
 using FoodBridge.DatabaseModels;
-using FoodBridge.RequestModels;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FoodBridge.Controllers
@@ -19,14 +18,18 @@ namespace FoodBridge.Controllers
         [HttpGet("available-food")]
         public async Task<ActionResult<IEnumerable<FoodItem>>> GetAvailableFood(
             [FromQuery] double latitude,
-            [FromQuery] double longitude)
+            [FromQuery] double longitude
+        )
         {
             var foodItems = await _repository.GetAvailableFoodItemsAsync(latitude, longitude);
             return Ok(foodItems);
         }
 
         [HttpPost("claim/{id}")]
-        public async Task<ActionResult<object>> ClaimFood(Guid id, [FromBody] ClaimFoodRequest request)
+        public async Task<ActionResult<object>> ClaimFood(
+            Guid id,
+            [FromBody] ClaimFoodRequest request
+        )
         {
             try
             {
@@ -43,11 +46,7 @@ namespace FoodBridge.Controllers
 
                 var claimedItem = await _repository.ClaimFoodItemAsync(id, request.ClaimerName);
 
-                return Ok(new
-                {
-                    id = claimedItem.Id,
-                    claimCode = claimedItem.ClaimCode
-                });
+                return Ok(new { id = claimedItem.Id, claimCode = claimedItem.ClaimCode });
             }
             catch (InvalidOperationException ex)
             {
@@ -55,5 +54,4 @@ namespace FoodBridge.Controllers
             }
         }
     }
-
 }

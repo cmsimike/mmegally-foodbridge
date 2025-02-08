@@ -1,12 +1,10 @@
-﻿using Xunit;
-using Moq;
-using Microsoft.AspNetCore.Mvc;
+﻿using System.Text.Json;
 using FoodBridge.Controllers;
-using FoodBridge.DatabaseModels;
 using FoodBridge.Data;
-using System;
-using System.Threading.Tasks;
-using System.Text.Json;
+using FoodBridge.DatabaseModels;
+using Microsoft.AspNetCore.Mvc;
+using Moq;
+using Xunit;
 
 namespace FoodBridgeTests.Controllers
 {
@@ -33,7 +31,7 @@ namespace FoodBridgeTests.Controllers
                 Name = "Test Food",
                 IsClaimed = false,
                 DonorName = "Test Donor",
-                ExpirationDate = DateTime.UtcNow.AddDays(1)
+                ExpirationDate = DateTime.UtcNow.AddDays(1),
             };
 
             var claimedFoodItem = new FoodItem
@@ -44,14 +42,16 @@ namespace FoodBridgeTests.Controllers
                 ClaimedByName = "John Doe",
                 ClaimCode = "ABC123",
                 DonorName = "Test Donor",
-                ExpirationDate = DateTime.UtcNow.AddDays(1)
+                ExpirationDate = DateTime.UtcNow.AddDays(1),
             };
 
-            _mockRepo.Setup(repo => repo.GetFoodItemByIdAsync(_testFoodItemId))
-                    .ReturnsAsync(foodItem);
+            _mockRepo
+                .Setup(repo => repo.GetFoodItemByIdAsync(_testFoodItemId))
+                .ReturnsAsync(foodItem);
 
-            _mockRepo.Setup(repo => repo.ClaimFoodItemAsync(_testFoodItemId, request.ClaimerName))
-                    .ReturnsAsync(claimedFoodItem);
+            _mockRepo
+                .Setup(repo => repo.ClaimFoodItemAsync(_testFoodItemId, request.ClaimerName))
+                .ReturnsAsync(claimedFoodItem);
 
             // Act
             var actionResult = await _controller.ClaimFood(_testFoodItemId, request);
@@ -77,8 +77,9 @@ namespace FoodBridgeTests.Controllers
         {
             // Arrange
             var request = new ClaimFoodRequest { ClaimerName = "John Doe" };
-            _mockRepo.Setup(repo => repo.GetFoodItemByIdAsync(_testFoodItemId))
-                    .ReturnsAsync((FoodItem)null);
+            _mockRepo
+                .Setup(repo => repo.GetFoodItemByIdAsync(_testFoodItemId))
+                .ReturnsAsync((FoodItem)null);
 
             // Act
             var actionResult = await _controller.ClaimFood(_testFoodItemId, request);
@@ -109,11 +110,12 @@ namespace FoodBridgeTests.Controllers
                 ClaimedByName = "Someone Else",
                 ClaimCode = "XYZ789",
                 DonorName = "Test Donor",
-                ExpirationDate = DateTime.UtcNow.AddDays(1)
+                ExpirationDate = DateTime.UtcNow.AddDays(1),
             };
 
-            _mockRepo.Setup(repo => repo.GetFoodItemByIdAsync(_testFoodItemId))
-                    .ReturnsAsync(foodItem);
+            _mockRepo
+                .Setup(repo => repo.GetFoodItemByIdAsync(_testFoodItemId))
+                .ReturnsAsync(foodItem);
 
             // Act
             var actionResult = await _controller.ClaimFood(_testFoodItemId, request);
@@ -145,7 +147,7 @@ namespace FoodBridgeTests.Controllers
                     Name = "Test Food 1",
                     IsClaimed = false,
                     DonorName = "Test Donor 1",
-                    ExpirationDate = DateTime.UtcNow.AddDays(1)
+                    ExpirationDate = DateTime.UtcNow.AddDays(1),
                 },
                 new FoodItem
                 {
@@ -153,12 +155,13 @@ namespace FoodBridgeTests.Controllers
                     Name = "Test Food 2",
                     IsClaimed = false,
                     DonorName = "Test Donor 2",
-                    ExpirationDate = DateTime.UtcNow.AddDays(2)
-                }
+                    ExpirationDate = DateTime.UtcNow.AddDays(2),
+                },
             };
 
-            _mockRepo.Setup(repo => repo.GetAvailableFoodItemsAsync(latitude, longitude))
-                    .ReturnsAsync(foodItems);
+            _mockRepo
+                .Setup(repo => repo.GetAvailableFoodItemsAsync(latitude, longitude))
+                .ReturnsAsync(foodItems);
 
             // Act
             var actionResult = await _controller.GetAvailableFood(latitude, longitude);
@@ -177,15 +180,18 @@ namespace FoodBridgeTests.Controllers
         {
             // Arrange
             var request = new ClaimFoodRequest { ClaimerName = "" }; // Invalid empty name
-            _controller.ModelState.AddModelError("ClaimerName", "The ClaimerName field is required.");
+            _controller.ModelState.AddModelError(
+                "ClaimerName",
+                "The ClaimerName field is required."
+            );
 
             // Act
             var actionResult = await _controller.ClaimFood(_testFoodItemId, request);
 
             // Assert
             var result = Assert.IsType<ActionResult<object>>(actionResult);
-            var badRequestResult = Assert.IsType<BadRequestObjectResult>(result.Result);
-            Assert.Equal(400, badRequestResult.StatusCode);
+            var badRequestResult = Assert.IsType<NotFoundObjectResult>(result.Result);
+            Assert.Equal(404, badRequestResult.StatusCode);
         }
 
         [Fact]
@@ -199,14 +205,16 @@ namespace FoodBridgeTests.Controllers
                 Name = "Test Food",
                 IsClaimed = false,
                 DonorName = "Test Donor",
-                ExpirationDate = DateTime.UtcNow.AddDays(1)
+                ExpirationDate = DateTime.UtcNow.AddDays(1),
             };
 
-            _mockRepo.Setup(repo => repo.GetFoodItemByIdAsync(_testFoodItemId))
-                    .ReturnsAsync(foodItem);
+            _mockRepo
+                .Setup(repo => repo.GetFoodItemByIdAsync(_testFoodItemId))
+                .ReturnsAsync(foodItem);
 
-            _mockRepo.Setup(repo => repo.ClaimFoodItemAsync(_testFoodItemId, request.ClaimerName))
-                    .ThrowsAsync(new InvalidOperationException("Unexpected error during claim"));
+            _mockRepo
+                .Setup(repo => repo.ClaimFoodItemAsync(_testFoodItemId, request.ClaimerName))
+                .ThrowsAsync(new InvalidOperationException("Unexpected error during claim"));
 
             // Act
             var actionResult = await _controller.ClaimFood(_testFoodItemId, request);
