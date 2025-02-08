@@ -1,0 +1,7 @@
+@FoodBridge_HostAddress_Dev = http://localhost:5266
+
+### Test getting available food items
+GET  {{FoodBridge_HostAddress_Dev}}/api/recipient/available-food?latitude=40.7128&longitude=-74.0060
+Accept: application/json
+
+###
