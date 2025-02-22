@@ -1,4 +1,4 @@
-﻿using FoodBridge.DatabaseModels;
+﻿using FoodBridge.Models.Database;
 using Microsoft.EntityFrameworkCore;
 
 namespace FoodBridge.Data
@@ -12,21 +12,19 @@ namespace FoodBridge.Data
             _context = context;
         }
 
-        public async Task<IEnumerable<FoodItem>> GetAvailableFoodItemsAsync(double latitude, double longitude)
+        public async Task<IEnumerable<FoodItem>> GetAvailableFoodItemsAsync(
+            double latitude,
+            double longitude
+        )
         {
-            // In a real application, you would:
-            // 1. Calculate distances using SQL geography types or similar
-            // 2. Filter by expiration date
-            // 3. Add pagination
-            return await _context.FoodItems
-                .Where(f => f.ExpirationDate > DateTime.UtcNow && !f.IsClaimed)
+            return await _context
+                .FoodItems.Where(f => f.ExpirationDate > DateTime.UtcNow && !f.IsClaimed)
                 .ToListAsync();
         }
 
         public async Task<FoodItem> AddFoodItemAsync(FoodItem foodItem)
         {
             foodItem.Id = Guid.NewGuid();
-            foodItem.CreatedAt = DateTime.UtcNow;
 
             _context.FoodItems.Add(foodItem);
             await _context.SaveChangesAsync();
@@ -54,10 +52,7 @@ namespace FoodBridge.Data
             }
 
             foodItem.IsClaimed = true;
-            foodItem.ClaimedAt = DateTime.UtcNow;
-            foodItem.ClaimedByName = claimerName;
             foodItem.ClaimCode = GenerateClaimCode();
-            foodItem.UpdatedAt = DateTime.UtcNow;
 
             await _context.SaveChangesAsync();
             return foodItem;
@@ -68,8 +63,47 @@ namespace FoodBridge.Data
             // Generate a 6-character alphanumeric code
             const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
             var random = new Random();
-            return new string(Enumerable.Repeat(chars, 6)
-                .Select(s => s[random.Next(s.Length)]).ToArray());
+            return new string(
+                Enumerable.Repeat(chars, 6).Select(s => s[random.Next(s.Length)]).ToArray()
+            );
+        }
+
+        public async Task<bool> DonorExistsAsync(string username)
+        {
+            return await _context.Donors.AnyAsync(d => d.Username == username);
+        }
+
+        public async Task<Donor> AddDonorAsync(Donor donor)
+        {
+            _context.Donors.Add(donor);
+            await _context.SaveChangesAsync();
+            return donor;
+        }
+
+        public async Task<Donor> GetDonorByUsernameAsync(string username)
+        {
+            return await _context.Donors.FirstOrDefaultAsync(d => d.Username == username);
+        }
+
+        public async Task<Store> AddStoreAsync(Store store)
+        {
+            _context.Stores.Add(store);
+            await _context.SaveChangesAsync();
+            return store;
+        }
+
+        public async Task<Store> GetStoreAsync(Guid storeId)
+        {
+            return await _context
+                .Stores.Include(s => s.FoodItems)
+                .FirstOrDefaultAsync(s => s.Id == storeId);
+        }
+
+        public async Task<Store> GetStoreByDonorIdAsync(Guid donorId)
+        {
+            return await _context
+                .Stores.Include(s => s.FoodItems)
+                .FirstOrDefaultAsync(s => s.DonorId == donorId);
         }
     }
 }

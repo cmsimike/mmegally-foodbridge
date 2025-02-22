@@ -1,5 +1,5 @@
 ﻿using FoodBridge.Data;
-using FoodBridge.DatabaseModels;
+using FoodBridge.Models.Database;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FoodBridge.Controllers

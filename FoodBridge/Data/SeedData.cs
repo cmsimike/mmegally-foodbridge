@@ -1,4 +1,4 @@
-﻿using FoodBridge.DatabaseModels;
+﻿using FoodBridge.Models.Database;
 
 namespace FoodBridge.Data
 {
@@ -6,22 +6,44 @@ namespace FoodBridge.Data
     {
         public static void Initialize(FoodDonationContext context)
         {
-            if (context.FoodItems.Any())
+            if (context.Donors.Any())
             {
                 return;
             }
 
-            context.FoodItems.AddRange(
+            var donor1 = new Donor
+            {
+                Id = Guid.NewGuid(),
+                Username = "localstore",
+                PasswordHash = BCrypt.Net.BCrypt.HashPassword("password123"),
+                CreatedAt = DateTime.UtcNow,
+            };
+
+            var store1 = new Store
+            {
+                Id = Guid.NewGuid(),
+                Name = "Local Food Store",
+                Latitude = 40.7128,
+                Longitude = -74.0060,
+                DonorId = donor1.Id,
+                CreatedAt = DateTime.UtcNow,
+            };
+
+            donor1.Store = store1;
+
+            context.Donors.Add(donor1);
+            context.Stores.Add(store1);
+
+            var foodItems = new[]
+            {
                 new FoodItem
                 {
                     Id = Guid.NewGuid(),
                     Name = "Canned Soup",
                     Description = "Vegetable soup, unopened",
                     ExpirationDate = DateTime.UtcNow.AddDays(60),
-                    DonorName = "Local Food Bank",
-                    Latitude = 40.7128,
-                    Longitude = -74.0060,
-                    CreatedAt = DateTime.UtcNow
+                    StoreId = store1.Id,
+                    CreatedAt = DateTime.UtcNow,
                 },
                 new FoodItem
                 {
@@ -29,13 +51,12 @@ namespace FoodBridge.Data
                     Name = "Fresh Bread",
                     Description = "Whole wheat bread, baked today",
                     ExpirationDate = DateTime.UtcNow.AddDays(5),
-                    DonorName = "Community Bakery",
-                    Latitude = 40.7589,
-                    Longitude = -73.9851,
-                    CreatedAt = DateTime.UtcNow
-                }
-            );
+                    StoreId = store1.Id,
+                    CreatedAt = DateTime.UtcNow,
+                },
+            };
 
+            context.FoodItems.AddRange(foodItems);
             context.SaveChanges();
         }
     }

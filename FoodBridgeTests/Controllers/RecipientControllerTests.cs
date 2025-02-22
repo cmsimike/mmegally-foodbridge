@@ -1,7 +1,7 @@
 ﻿using System.Text.Json;
 using FoodBridge.Controllers;
 using FoodBridge.Data;
-using FoodBridge.DatabaseModels;
+using FoodBridge.Models.Database;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using Xunit;
@@ -30,7 +30,6 @@ namespace FoodBridgeTests.Controllers
                 Id = _testFoodItemId,
                 Name = "Test Food",
                 IsClaimed = false,
-                DonorName = "Test Donor",
                 ExpirationDate = DateTime.UtcNow.AddDays(1),
             };
 
@@ -39,9 +38,7 @@ namespace FoodBridgeTests.Controllers
                 Id = _testFoodItemId,
                 Name = "Test Food",
                 IsClaimed = true,
-                ClaimedByName = "John Doe",
                 ClaimCode = "ABC123",
-                DonorName = "Test Donor",
                 ExpirationDate = DateTime.UtcNow.AddDays(1),
             };
 
@@ -107,9 +104,7 @@ namespace FoodBridgeTests.Controllers
                 Id = _testFoodItemId,
                 Name = "Test Food",
                 IsClaimed = true,
-                ClaimedByName = "Someone Else",
                 ClaimCode = "XYZ789",
-                DonorName = "Test Donor",
                 ExpirationDate = DateTime.UtcNow.AddDays(1),
             };
 
@@ -146,7 +141,6 @@ namespace FoodBridgeTests.Controllers
                     Id = Guid.NewGuid(),
                     Name = "Test Food 1",
                     IsClaimed = false,
-                    DonorName = "Test Donor 1",
                     ExpirationDate = DateTime.UtcNow.AddDays(1),
                 },
                 new FoodItem
@@ -154,7 +148,6 @@ namespace FoodBridgeTests.Controllers
                     Id = Guid.NewGuid(),
                     Name = "Test Food 2",
                     IsClaimed = false,
-                    DonorName = "Test Donor 2",
                     ExpirationDate = DateTime.UtcNow.AddDays(2),
                 },
             };
@@ -204,7 +197,6 @@ namespace FoodBridgeTests.Controllers
                 Id = _testFoodItemId,
                 Name = "Test Food",
                 IsClaimed = false,
-                DonorName = "Test Donor",
                 ExpirationDate = DateTime.UtcNow.AddDays(1),
             };
 

@@ -3,6 +3,9 @@
 ##
 ## Get latest from https://github.com/github/gitignore/blob/main/VisualStudio.gitignore
 
+# Docker data files
+docker/docker-data/*
+
 # User-specific files
 *.rsuser
 *.suo

@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace FoodBridge.DatabaseModels
+namespace FoodBridge.Models.Database
 {
     [Table("FoodItems")]
     public class FoodItem
@@ -20,28 +20,15 @@ namespace FoodBridge.DatabaseModels
         public DateTime ExpirationDate { get; set; }
 
         [Required]
-        [MaxLength(100)]
-        public string DonorName { get; set; }
-
-        [Required]
-        public double Latitude { get; set; }
-
-        [Required]
-        public double Longitude { get; set; }
-
-        [Required]
         public DateTime CreatedAt { get; set; }
 
-        public DateTime? UpdatedAt { get; set; }
-
         public bool IsClaimed { get; set; }
-
-        public DateTime? ClaimedAt { get; set; }
 
         [MaxLength(10)]
         public string? ClaimCode { get; set; }
 
-        [MaxLength(100)]
-        public string? ClaimedByName { get; set; }
+        [Required]
+        public Guid StoreId { get; set; }
+        public Store Store { get; set; }
     }
 }

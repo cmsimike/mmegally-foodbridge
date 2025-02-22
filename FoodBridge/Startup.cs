@@ -1,4 +1,6 @@
 ﻿using FoodBridge.Data;
+using FoodBridge.Middleware;
+using FoodBridge.Services;
 using Microsoft.EntityFrameworkCore;
 
 namespace FoodBridge
@@ -20,10 +22,12 @@ namespace FoodBridge
 
             // Add EF Core with in-memory database
             services.AddDbContext<FoodDonationContext>(options =>
-                options.UseInMemoryDatabase("FoodDonationDb"));
+                options.UseInMemoryDatabase("FoodDonationDb")
+            );
 
             // Register repository
             services.AddScoped<IFoodItemRepository, FoodItemRepository>();
+            services.AddSingleton<IAuthService, InMemoryAuthService>();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -43,6 +47,7 @@ namespace FoodBridge
 
             app.UseHttpsRedirection();
             app.UseRouting();
+            app.UseMiddleware<AuthenticationMiddleware>();
             app.UseAuthorization();
             app.UseEndpoints(endpoints =>
             {

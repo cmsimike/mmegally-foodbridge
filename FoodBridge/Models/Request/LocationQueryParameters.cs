@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace FoodBridge.RequestModels
+namespace FoodBridge.Models.Request
 {
     public class LocationQueryParameters
     {
@@ -12,5 +12,4 @@ namespace FoodBridge.RequestModels
         [Range(-180, 180)]
         public double Longitude { get; set; }
     }
-
 }
