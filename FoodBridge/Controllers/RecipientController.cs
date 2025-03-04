@@ -46,7 +46,7 @@ namespace FoodBridge.Controllers
 
                 var claimedItem = await _repository.ClaimFoodItemAsync(id, request.ClaimerName);
 
-                return Ok(new { id = claimedItem.Id, claimCode = claimedItem.ClaimCode });
+                return Ok(new { id = claimedItem!.Id, claimCode = claimedItem.ClaimCode });
             }
             catch (InvalidOperationException ex)
             {

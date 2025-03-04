@@ -32,12 +32,12 @@ namespace FoodBridge.Data
             return foodItem;
         }
 
-        public async Task<FoodItem> GetFoodItemByIdAsync(Guid id)
+        public async Task<FoodItem?> GetFoodItemByIdAsync(Guid id)
         {
             return await _context.FoodItems.FindAsync(id);
         }
 
-        public async Task<FoodItem> ClaimFoodItemAsync(Guid id, string claimerName)
+        public async Task<FoodItem?> ClaimFoodItemAsync(Guid id, string claimerName)
         {
             var foodItem = await _context.FoodItems.FindAsync(id);
 
@@ -80,7 +80,7 @@ namespace FoodBridge.Data
             return donor;
         }
 
-        public async Task<Donor> GetDonorByUsernameAsync(string username)
+        public async Task<Donor?> GetDonorByUsernameAsync(string username)
         {
             return await _context.Donors.FirstOrDefaultAsync(d => d.Username == username);
         }
@@ -92,14 +92,14 @@ namespace FoodBridge.Data
             return store;
         }
 
-        public async Task<Store> GetStoreAsync(Guid storeId)
+        public async Task<Store?> GetStoreAsync(Guid storeId)
         {
             return await _context
                 .Stores.Include(s => s.FoodItems)
                 .FirstOrDefaultAsync(s => s.Id == storeId);
         }
 
-        public async Task<Store> GetStoreByDonorIdAsync(Guid donorId)
+        public async Task<Store?> GetStoreByDonorIdAsync(Guid donorId)
         {
             return await _context
                 .Stores.Include(s => s.FoodItems)

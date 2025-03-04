@@ -136,9 +136,6 @@ namespace FoodBridge.Tests.Controllers
                 };
 
                 SetupAuthentication();
-                _mockRepo
-                    .Setup(repo => repo.GetStoreByDonorIdAsync(_testDonorId))
-                    .ReturnsAsync((Store)null);
 
                 var actionResult = await _controller.RegisterStore(request);
 
@@ -167,6 +164,8 @@ namespace FoodBridge.Tests.Controllers
                     Id = Guid.NewGuid(),
                     DonorId = _testDonorId,
                     Name = "Existing Store",
+                    Latitude = 40.7128,
+                    Longitude = -74.0060,
                 };
 
                 SetupAuthentication();
@@ -201,6 +200,8 @@ namespace FoodBridge.Tests.Controllers
                     Id = Guid.NewGuid(),
                     DonorId = _testDonorId,
                     Name = "Test Store",
+                    Latitude = 40.7128,
+                    Longitude = -74.0060,
                 };
 
                 SetupAuthentication();
@@ -231,9 +232,6 @@ namespace FoodBridge.Tests.Controllers
                 };
 
                 SetupAuthentication();
-                _mockRepo
-                    .Setup(repo => repo.GetStoreByDonorIdAsync(_testDonorId))
-                    .ReturnsAsync((Store)null);
 
                 var actionResult = await _controller.CreateFoodItem(foodItem);
 
@@ -283,9 +281,6 @@ namespace FoodBridge.Tests.Controllers
             public async Task GetStore_WithNoStore_ReturnsNotFound()
             {
                 SetupAuthentication();
-                _mockRepo
-                    .Setup(repo => repo.GetStoreByDonorIdAsync(_testDonorId))
-                    .ReturnsAsync((Store)null);
 
                 var actionResult = await _controller.GetStore();
 

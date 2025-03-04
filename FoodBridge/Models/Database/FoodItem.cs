@@ -11,10 +11,10 @@ namespace FoodBridge.Models.Database
 
         [Required]
         [MaxLength(100)]
-        public string Name { get; set; }
+        public required string Name { get; set; }
 
         [MaxLength(500)]
-        public string Description { get; set; }
+        public string? Description { get; set; }
 
         [Required]
         public DateTime ExpirationDate { get; set; }
@@ -29,6 +29,6 @@ namespace FoodBridge.Models.Database
 
         [Required]
         public Guid StoreId { get; set; }
-        public Store Store { get; set; }
+        public Store? Store { get; set; }
     }
 }

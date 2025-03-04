@@ -63,12 +63,7 @@ public class DonorController : ControllerBase
     [Authorize]
     public async Task<ActionResult<Store>> RegisterStore([FromBody] RegisterStoreRequest request)
     {
-        if (!User.Identity?.IsAuthenticated ?? true)
-        {
-            return Unauthorized();
-        }
-
-        var donorId = Guid.Parse(User.Identity.Name);
+        var donorId = Guid.Parse(User.Identity!.Name!);
         var existingStore = await _repository.GetStoreByDonorIdAsync(donorId);
 
         if (existingStore != null)
@@ -94,12 +89,7 @@ public class DonorController : ControllerBase
     [Authorize]
     public async Task<ActionResult<FoodItem>> CreateFoodItem([FromBody] FoodItem foodItem)
     {
-        if (!User.Identity?.IsAuthenticated ?? true)
-        {
-            return Unauthorized();
-        }
-
-        var donorId = Guid.Parse(User.Identity.Name);
+        var donorId = Guid.Parse(User.Identity!.Name!);
         var store = await _repository.GetStoreByDonorIdAsync(donorId);
 
         if (store == null)
@@ -121,12 +111,7 @@ public class DonorController : ControllerBase
     [Authorize]
     public async Task<ActionResult<Store>> GetStore()
     {
-        if (!User.Identity?.IsAuthenticated ?? true)
-        {
-            return Unauthorized();
-        }
-
-        var donorId = Guid.Parse(User.Identity.Name);
+        var donorId = Guid.Parse(User.Identity!.Name!);
         var store = await _repository.GetStoreByDonorIdAsync(donorId);
 
         if (store == null)

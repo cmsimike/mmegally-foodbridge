@@ -7,7 +7,7 @@ namespace FoodBridge.Models.Request
         [Required]
         [MinLength(3)]
         [MaxLength(100)]
-        public string Name { get; set; }
+        public required string Name { get; set; }
 
         [Required]
         [Range(-90, 90)]

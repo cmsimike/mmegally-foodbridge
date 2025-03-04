@@ -8,11 +8,11 @@ namespace FoodBridge.Models.Database
 
         [Required]
         [MaxLength(50)]
-        public string Username { get; set; }
+        public required string Username { get; set; }
 
         [Required]
-        public string PasswordHash { get; set; }
+        public required string PasswordHash { get; set; }
         public DateTime CreatedAt { get; set; }
-        public Store Store { get; set; }
+        public Store? Store { get; set; }
     }
 }

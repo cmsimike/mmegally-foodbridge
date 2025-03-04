@@ -8,16 +8,16 @@ namespace FoodBridge.Models.Database
 
         [Required]
         [MaxLength(100)]
-        public string Name { get; set; }
+        public required string Name { get; set; }
 
         [Required]
-        public double Latitude { get; set; }
+        public required double Latitude { get; set; }
 
         [Required]
-        public double Longitude { get; set; }
+        public required double Longitude { get; set; }
         public DateTime CreatedAt { get; set; }
         public Guid DonorId { get; set; }
-        public Donor Donor { get; set; }
-        public ICollection<FoodItem> FoodItems { get; set; }
+        public Donor? Donor { get; set; }
+        public ICollection<FoodItem>? FoodItems { get; set; }
     }
 }
