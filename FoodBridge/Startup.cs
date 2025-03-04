@@ -20,11 +20,21 @@ namespace FoodBridge
             services.AddEndpointsApiExplorer();
             services.AddSwaggerGen();
 
-            // Add EF Core with in-memory database
-            services.AddDbContext<FoodDonationContext>(options =>
-                options.UseInMemoryDatabase("FoodDonationDb")
-            );
-
+            // Configure database context based on environment
+            if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Testing")
+            {
+                // Use in-memory database for testing
+                services.AddDbContext<FoodDonationContext>(options =>
+                    options.UseInMemoryDatabase("FoodDonationTestDb")
+                );
+            }
+            else
+            {
+                // Use PostgreSQL for development
+                services.AddDbContext<FoodDonationContext>(options =>
+                    options.UseNpgsql(Configuration.GetConnectionString("DefaultConnection"))
+                );
+            }
             // Register repository
             services.AddScoped<IFoodItemRepository, FoodItemRepository>();
             services.AddSingleton<IAuthService, InMemoryAuthService>();
@@ -37,11 +47,15 @@ namespace FoodBridge
                 app.UseSwagger();
                 app.UseSwaggerUI();
 
-                // Seed the in-memory database
                 using (var scope = app.ApplicationServices.CreateScope())
                 {
-                    var context = scope.ServiceProvider.GetRequiredService<FoodDonationContext>();
-                    SeedData.Initialize(context);
+                    var dbContext = scope.ServiceProvider.GetRequiredService<FoodDonationContext>();
+                    dbContext.Database.Migrate();
+                    SeedData.Initialize(dbContext);
+                    if (env.IsDevelopment())
+                    {
+                        SeedData.Initialize(dbContext);
+                    }
                 }
             }
 

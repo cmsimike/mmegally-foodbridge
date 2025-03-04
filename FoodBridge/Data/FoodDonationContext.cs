@@ -16,25 +16,24 @@ namespace FoodBridge.Data
         {
             base.OnModelCreating(modelBuilder);
 
+            // Other configurations
             modelBuilder.Entity<FoodItem>().HasIndex(f => f.ExpirationDate);
-
-            base.OnModelCreating(modelBuilder);
-
             modelBuilder.Entity<Store>().HasIndex(s => new { s.Latitude, s.Longitude });
-
             modelBuilder.Entity<Donor>().HasIndex(d => d.Username).IsUnique();
 
+            // Donor-Store relationship (one-to-one)
             modelBuilder
                 .Entity<Donor>()
                 .HasOne(d => d.Store)
                 .WithOne(s => s.Donor)
                 .HasForeignKey<Store>(s => s.DonorId);
 
+            // Store-FoodItem relationship (one-to-many)
             modelBuilder
                 .Entity<FoodItem>()
-                .HasOne<Store>()
+                .HasOne(f => f.Store)
                 .WithMany(s => s.FoodItems)
-                .HasForeignKey("StoreId")
+                .HasForeignKey(f => f.StoreId)
                 .IsRequired();
         }
     }

@@ -18,6 +18,7 @@ namespace FoodBridgeTests.Controllers
         {
             _mockRepo = new Mock<IFoodItemRepository>();
             _controller = new RecipientController(_mockRepo.Object);
+            Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", "Testing");
         }
 
         [Fact]

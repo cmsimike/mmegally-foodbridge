@@ -14,7 +14,7 @@ namespace FoodBridge.Data
             var donor1 = new Donor
             {
                 Id = Guid.NewGuid(),
-                Username = "localstore",
+                Username = "lmustore",
                 PasswordHash = BCrypt.Net.BCrypt.HashPassword("password123"),
                 CreatedAt = DateTime.UtcNow,
             };
@@ -22,9 +22,9 @@ namespace FoodBridge.Data
             var store1 = new Store
             {
                 Id = Guid.NewGuid(),
-                Name = "Local Food Store",
-                Latitude = 40.7128,
-                Longitude = -74.0060,
+                Name = "Store at LMU",
+                Latitude = 33.96848344360838,
+                Longitude = -118.41593724437132,
                 DonorId = donor1.Id,
                 CreatedAt = DateTime.UtcNow,
             };

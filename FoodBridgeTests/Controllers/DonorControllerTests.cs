@@ -27,6 +27,7 @@ namespace FoodBridge.Tests.Controllers
                 _mockRepo = new Mock<IFoodItemRepository>();
                 _mockAuthService = new Mock<IAuthService>();
                 _controller = new DonorController(_mockRepo.Object, _mockAuthService.Object);
+                Environment.SetEnvironmentVariable("ASPNETCORE_ENVIRONMENT", "Testing");
             }
 
             private void SetupAuthentication()
