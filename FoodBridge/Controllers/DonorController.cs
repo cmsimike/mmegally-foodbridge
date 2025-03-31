@@ -28,9 +28,7 @@ public class DonorController : ControllerBase
             return Conflict(new { message = "Username already exists" });
         }
 
-        string password = new string(
-            Enumerable.Repeat(_chars, 8).Select(s => s[_random.Next(s.Length)]).ToArray()
-        );
+        string password = request.Password;
 
         var donor = new Donor
         {
@@ -42,7 +40,9 @@ public class DonorController : ControllerBase
 
         await _repository.AddDonorAsync(donor);
 
-        return Ok(new { username = donor.Username, password });
+        var token = _authService.GenerateToken(donor.Id);
+
+        return Ok(new { username = donor.Username, token = token });
     }
 
     [HttpPost("login")]

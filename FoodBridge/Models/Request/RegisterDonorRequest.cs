@@ -8,5 +8,10 @@ namespace FoodBridge.Models.Request
         [MinLength(3)]
         [MaxLength(50)]
         public required string Username { get; set; }
+
+        [Required]
+        [MinLength(3)]
+        [MaxLength(50)]
+        public required string Password { get; set; }
     }
 }

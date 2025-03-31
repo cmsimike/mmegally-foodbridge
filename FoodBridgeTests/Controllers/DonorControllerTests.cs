@@ -45,10 +45,17 @@ namespace FoodBridge.Tests.Controllers
             [Fact]
             public async Task RegisterDonor_WithNewUsername_ReturnsOkWithPassword()
             {
-                var request = new RegisterDonorRequest { Username = "newdonor" };
+                var request = new RegisterDonorRequest
+                {
+                    Username = "newdonor",
+                    Password = "asd123455",
+                };
                 _mockRepo
                     .Setup(repo => repo.DonorExistsAsync(request.Username))
                     .ReturnsAsync(false);
+                _mockAuthService
+                    .Setup(auth => auth.GenerateToken(It.IsAny<Guid>()))
+                    .Returns(_testToken);
 
                 var actionResult = await _controller.RegisterDonor(request);
 
@@ -59,9 +66,9 @@ namespace FoodBridge.Tests.Controllers
                 var root = responseDoc.RootElement;
 
                 Assert.True(root.TryGetProperty("username", out var usernameElement));
-                Assert.True(root.TryGetProperty("password", out var passwordElement));
+                Assert.True(root.TryGetProperty("token", out var tokenElement));
                 Assert.Equal("newdonor", usernameElement.GetString());
-                Assert.NotNull(passwordElement.GetString());
+                Assert.Equal(_testToken, tokenElement.GetString());
             }
 
             [Fact]

@@ -20,6 +20,17 @@ namespace FoodBridge
             services.AddEndpointsApiExplorer();
             services.AddSwaggerGen();
 
+            services.AddCors(options =>
+            {
+                options.AddPolicy(
+                    "AllowAll",
+                    builder =>
+                    {
+                        builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader();
+                    }
+                );
+            });
+
             // Configure database context based on environment
             if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Testing")
             {
@@ -52,17 +63,15 @@ namespace FoodBridge
                     var dbContext = scope.ServiceProvider.GetRequiredService<FoodDonationContext>();
                     dbContext.Database.Migrate();
                     SeedData.Initialize(dbContext);
-                    if (env.IsDevelopment())
-                    {
-                        SeedData.Initialize(dbContext);
-                    }
                 }
             }
 
             app.UseHttpsRedirection();
+            app.UseCors("AllowAll");
             app.UseRouting();
             app.UseMiddleware<AuthenticationMiddleware>();
             app.UseAuthorization();
+
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
