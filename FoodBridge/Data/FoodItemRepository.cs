@@ -18,7 +18,7 @@ namespace FoodBridge.Data
         )
         {
             return await _context
-                .FoodItems.Where(f => f.ExpirationDate > DateTime.UtcNow && !f.IsClaimed)
+                .FoodItems.Where(f => f.ExpirationDate > DateTime.UtcNow && f.ClaimCode == null)
                 .ToListAsync();
         }
 
@@ -51,7 +51,6 @@ namespace FoodBridge.Data
                 throw new InvalidOperationException("Food item is already claimed");
             }
 
-            foodItem.IsClaimed = true;
             foodItem.ClaimCode = GenerateClaimCode();
 
             await _context.SaveChangesAsync();
@@ -104,6 +103,12 @@ namespace FoodBridge.Data
             return await _context
                 .Stores.Include(s => s.FoodItems)
                 .FirstOrDefaultAsync(s => s.DonorId == donorId);
+        }
+
+        public async Task UpdateFoodItemAsync(FoodItem foodItem)
+        {
+            _context.FoodItems.Update(foodItem);
+            await _context.SaveChangesAsync();
         }
     }
 }

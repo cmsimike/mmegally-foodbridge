@@ -13,10 +13,12 @@ namespace FoodBridge.Data
 
     public interface IFoodItemRepository
     {
+        // All
+        Task<FoodItem?> GetFoodItemByIdAsync(Guid id);
+
         // Recipient
         Task<IEnumerable<FoodItem>> GetAvailableFoodItemsAsync(double latitude, double longitude);
         Task<FoodItem> AddFoodItemAsync(FoodItem foodItem);
-        Task<FoodItem?> GetFoodItemByIdAsync(Guid id);
         Task<FoodItem?> ClaimFoodItemAsync(Guid id, string claimerName);
 
         // Donor
@@ -26,5 +28,6 @@ namespace FoodBridge.Data
         Task<Store> AddStoreAsync(Store store);
         Task<Store?> GetStoreAsync(Guid storeId);
         Task<Store?> GetStoreByDonorIdAsync(Guid donorId);
+        Task UpdateFoodItemAsync(FoodItem foodItem);
     }
 }

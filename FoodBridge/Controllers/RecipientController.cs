@@ -22,6 +22,17 @@ namespace FoodBridge.Controllers
         )
         {
             var foodItems = await _repository.GetAvailableFoodItemsAsync(latitude, longitude);
+
+            // Populate Store property for each FoodItem
+            foreach (var item in foodItems)
+            {
+                item.Store = await _repository.GetStoreAsync(item.StoreId);
+                if (item.Store != null)
+                {
+                    item.Store.FoodItems = null;
+                }
+            }
+
             return Ok(foodItems);
         }
 

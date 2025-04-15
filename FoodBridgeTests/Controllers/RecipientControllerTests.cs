@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Moq;
 using Xunit;
 
-namespace FoodBridgeTests.Controllers
+namespace FoodBridge.Tests.Controllers
 {
     public class RecipientControllerTests
     {

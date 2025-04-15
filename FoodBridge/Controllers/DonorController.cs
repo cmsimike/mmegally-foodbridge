@@ -29,7 +29,6 @@ public class DonorController : ControllerBase
         }
 
         string password = request.Password;
-
         var donor = new Donor
         {
             Id = Guid.NewGuid(),
@@ -39,9 +38,7 @@ public class DonorController : ControllerBase
         };
 
         await _repository.AddDonorAsync(donor);
-
         var token = _authService.GenerateToken(donor.Id);
-
         return Ok(new { username = donor.Username, token = token });
     }
 
@@ -49,7 +46,6 @@ public class DonorController : ControllerBase
     public async Task<ActionResult<object>> Login([FromBody] LoginDonorRequest request)
     {
         var donor = await _repository.GetDonorByUsernameAsync(request.Username);
-
         if (donor == null || !BCrypt.Net.BCrypt.Verify(request.Password, donor.PasswordHash))
         {
             return Unauthorized(new { message = "Invalid username or password" });
@@ -65,7 +61,6 @@ public class DonorController : ControllerBase
     {
         var donorId = Guid.Parse(User.Identity!.Name!);
         var existingStore = await _repository.GetStoreByDonorIdAsync(donorId);
-
         if (existingStore != null)
         {
             return Conflict(new { message = "Donor already has a registered store" });
@@ -91,7 +86,6 @@ public class DonorController : ControllerBase
     {
         var donorId = Guid.Parse(User.Identity!.Name!);
         var store = await _repository.GetStoreByDonorIdAsync(donorId);
-
         if (store == null)
         {
             return BadRequest(
@@ -102,6 +96,8 @@ public class DonorController : ControllerBase
         foodItem.Id = Guid.NewGuid();
         foodItem.CreatedAt = DateTime.UtcNow;
         foodItem.StoreId = store.Id;
+        foodItem.IsClaimed = false;
+        foodItem.ClaimCode = null;
 
         await _repository.AddFoodItemAsync(foodItem);
         return Ok(foodItem);
@@ -113,12 +109,56 @@ public class DonorController : ControllerBase
     {
         var donorId = Guid.Parse(User.Identity!.Name!);
         var store = await _repository.GetStoreByDonorIdAsync(donorId);
-
         if (store == null)
         {
             return NotFound(new { message = "No store found for this donor" });
         }
 
         return Ok(store);
+    }
+
+    [HttpPut("food/{id}/pickup")]
+    [Authorize]
+    public async Task<ActionResult<FoodItem>> MarkFoodItemAsPickedUp(Guid id)
+    {
+        var donorId = Guid.Parse(User.Identity!.Name!);
+
+        // Get the donor's store
+        var store = await _repository.GetStoreByDonorIdAsync(donorId);
+        if (store == null)
+        {
+            return NotFound(new { message = "No store found for this donor" });
+        }
+
+        // Get the food item
+        var foodItem = await _repository.GetFoodItemByIdAsync(id);
+        if (foodItem == null)
+        {
+            return NotFound(new { message = "Food item not found" });
+        }
+
+        // Check if the food item belongs to the donor's store
+        if (foodItem.StoreId != store.Id)
+        {
+            return Forbid();
+        }
+
+        // Check if the item is claimed but not yet picked up
+        // Item should have ClaimCode but not be marked as picked up (IsClaimed = false)
+        if (foodItem.IsClaimed)
+        {
+            return BadRequest(new { message = "Food item is already picked up" });
+        }
+
+        if (string.IsNullOrEmpty(foodItem.ClaimCode))
+        {
+            return BadRequest(new { message = "Food item is not claimed" });
+        }
+
+        // Mark the item as picked up
+        foodItem.IsClaimed = true;
+        await _repository.UpdateFoodItemAsync(foodItem);
+
+        return Ok(foodItem);
     }
 }
