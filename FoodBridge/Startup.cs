@@ -1,6 +1,7 @@
 ﻿using FoodBridge.Data;
 using FoodBridge.Middleware;
 using FoodBridge.Services;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.EntityFrameworkCore;
 
 namespace FoodBridge
@@ -16,7 +17,10 @@ namespace FoodBridge
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllers();
+            services.AddControllers().AddJsonOptions(options =>
+            {
+                options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
+            }); ;
             services.AddEndpointsApiExplorer();
             services.AddSwaggerGen();
 
@@ -30,6 +34,8 @@ namespace FoodBridge
                     }
                 );
             });
+
+            services.AddAuthentication("Bearer").AddScheme<AuthenticationSchemeOptions, CustomAuthHandler>("Bearer", null);
 
             // Configure database context based on environment
             if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Testing")
@@ -69,7 +75,8 @@ namespace FoodBridge
             app.UseHttpsRedirection();
             app.UseCors("AllowAll");
             app.UseRouting();
-            app.UseMiddleware<AuthenticationMiddleware>();
+            app.UseAuthentication();
+            app.UseAuthorization();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
