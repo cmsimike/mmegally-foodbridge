@@ -5,8 +5,6 @@ namespace FoodBridge.Data
 {
     public class ClaimFoodRequest
     {
-        [Required]
-        [MinLength(2)]
         [MaxLength(100)]
         public required string ClaimerName { get; set; }
     }
